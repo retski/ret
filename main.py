@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import os
 
 import discord
-import youtube_dl
+import yt_dlp
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -22,8 +22,7 @@ class YTLogger(object):
 ydl_opts = {
     'format': 'bestvideo[ext=mp4]/mp4',
     'outputmpl': '%(title)s',
-    'logger': YTLogger(),
-    'download_archive': '/video'
+    'logger': YTLogger()
 }
 # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
 load_dotenv()
@@ -37,7 +36,7 @@ async def on_ready():
 
 @bot.command(name='ret')
 async def mainCmd(ctx, arg):
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([arg])
 
 bot.run(TOKEN)
