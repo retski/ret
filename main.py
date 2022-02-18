@@ -48,7 +48,6 @@ async def mainCmd(ctx, arg):
         filename = 'info.json'
         with open(filename, 'w') as file_object:
             json.dump(info, file_object)
-                    await area.send(file = discord.File(f"{title}.mp4"))
         f = open('info.json')
         data = json.load(f)
         title = data['title']
@@ -60,7 +59,6 @@ async def mainCmd(ctx, arg):
         print(title)
         area=ctx.message.channel
         await area.send(file = discord.File(f"{title}.mp4"))
-
         """ fixing embeds at a later date
         file = discord.File("ret.mp4")
         area=ctx.message.channel
