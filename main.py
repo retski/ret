@@ -5,6 +5,7 @@ import json
 import discord
 import yt_dlp
 import re
+import ffmpeg
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -59,7 +60,6 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
             reposts = data['repost_count']
             comments = data['comment_count']
             file = discord.File("ret.mp4")
-            area=ctx.message.channel
             embed = discord.Embed(
                 title = remove_urls(f"{title}"),
                 url = arg,
@@ -74,14 +74,13 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
             print(f"Downloading {title} for {ctx.author}...")
             os.remove("ret.mp4")
         elif "youtube" in arg:
-            bot.delete_message(ctx.message)
+            await ctx.message.delete()
             title = data['title'] 
             uploader = data['uploader']
             uploader_url = data['uploader_url']
             likes = data['like_count']
             views = data['view_count']
             file = discord.File("ret.mp4")
-            area=ctx.message.channel
             embed = discord.Embed(
                 title = remove_urls(f"{title}"),
                 url = arg,
@@ -96,28 +95,34 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
             print(f"Downloading {title} for {ctx.author}...")
             os.remove("ret.mp4")
         elif "tiktok" in arg:
-            bot.delete_message(ctx.message)
+            await ctx.message.delete()
             title = data['title'] 
-            uploader = data['uploader']
+            uploader = data['creator']
             uploader_url = data['uploader_url']
             likes = data['like_count']
-            views = data['view_count']
-            file = discord.File("ret.mp4")
-            area=ctx.message.channel
+            reposts = data['repost_count']
+            comments = data['comment_count']
             embed = discord.Embed(
                 title = remove_urls(f"{title}"),
                 url = arg,
-                color = discord.Color.red())
+                color = discord.Color.blue())
             embed.set_author(
                 name = (f"{uploader}"),
                 url = (f"{uploader_url}"),
-                icon_url = "https://brandlogos.net/wp-content/uploads/2020/03/YouTube-icon-SVG-512x512.png")
+                icon_url = "https://cliply.co/wp-content/uploads/2021/02/372102780_TIKTOK_ICON_1080.png")
             embed.set_footer(
-                text=(f"❤️ {likes} 👁️ {views} • {ctx.author}"))
+                text=(f"❤️ {likes} 🔁 {reposts} 💬 {comments} • {ctx.author}"))
+            process = ffmpeg.input('ret.mp4')
+            process = ffmpeg.output(process, 'ret_tt.mp4', vcodec='libx264')
+            ffmpeg.run(process)
+            ffmpeg.overwrite_output(process)
+            file = discord.File("ret_tt.mp4")
             await ctx.send(file=file, embed=embed)
             print(f"Downloading {title} for {ctx.author}...")
+            os.remove("ret_tt.mp4")
             os.remove("ret.mp4")
         else:
+
             embed = discord.Embed(
                 title = "⚠️ Site wasn't recognised",
                 color = discord.Color.dark_gold())
