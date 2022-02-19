@@ -5,4 +5,6 @@ Small discord bot for downloading media and embedding it in a channel
 
 ## Usage
 
-> ;ret <supported URL>
+```
+;ret <supported URL>
+```
