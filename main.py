@@ -40,7 +40,30 @@ bot = commands.Bot(command_prefix=';') # Set prefix to ; i.e ";ret" for commands
 async def on_ready(): # Event occurs as soon as bot is online
     print(f'Connected as {bot.user}.') # Prints to console that bot is connected
 
+
+@commands.Cog.listener()
+async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+    if isinstance(error, commands.CommandNotFound):
+        return  # Return because we don't want to show an error for every command not found
+    elif isinstance(error, commands.MissingPermissions):
+        message = (f"{ctx.author} is missing permissions.")
+    elif isinstance(error, commands.UserInputError):
+        message = "Incorrect Input"
+    elif isinstance(error, commands.CommandError):
+        message = "Something went wrong."
+    else:
+        message = "Something went wrong."
+
+    await ctx.send(message, delete_after=5)
+    await ctx.message.delete(delay=5)
+
 @bot.command(name='ret', pass_context=True) # Command ;ret
+async def on_error(ctx):
+    embed = discord.Embed(
+        title = "⚠️ Invalid Input",
+        description = "Must be a URL containing media supported by yt-dlp that isn't longer than\n90~ seconds.",
+        color = discord.Color.dark_gold())
+    await ctx.send(embed=embed)
 async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as 'arg' variable
     with yt_dlp.YoutubeDL(ydl_opts) as ydl: # yt-dlp download with ydl_opts as options
         info = ydl.extract_info(arg) # stores arg info in json format to 'info' variable
@@ -105,7 +128,7 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
             embed = discord.Embed(
                 title = remove_urls(f"{title}"),
                 url = arg,
-                color = discord.Color.blue())
+                color = discord.Color.purple())
             embed.set_author(
                 name = (f"{uploader}"),
                 url = (f"{uploader_url}"),
@@ -125,8 +148,11 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
 
             embed = discord.Embed(
                 title = "⚠️ Site wasn't recognised",
+                description = "Attempting download anyway",
                 color = discord.Color.dark_gold())
-            await ctx.send(embed=embed)
+            file = discord.File("ret.mp4")
+            await ctx.send(file=file, embed=embed)
             await ctx.embed.delete(delay=5)
+            os.remove("ret.mp4")
 bot.run(TOKEN)
 
