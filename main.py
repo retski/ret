@@ -1,15 +1,6 @@
 # Main Bot
 from __future__ import unicode_literals
-import os
-import json
-import discord
-import yt_dlp
-import re
-import ffmpeg
-import traceback
-import logging
-import sys
-
+import os, json, discord, yt_dlp, re, ffmpeg, traceback, logging, sys
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord.ext.commands import Bot
@@ -19,6 +10,18 @@ logging.basicConfig(filename='.\output.log', filemode='w', level=logging.INFO, f
 def remove_urls (vTEXT):
     vTEXT = re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', '', vTEXT, flags=re.MULTILINE)
     return(vTEXT)
+
+def exception_handler(ctx, exctype, value, tb):
+    logging.warning(traceback.format_exc())
+    logging.error(traceback.format_exc())
+    logging.exception(traceback.format_exc())
+    embed = discord.Embed(
+        title = "⚠️ Invalid Input",
+        description = "Must be a URL containing media supported by yt-dlp that isn't longer than\n90~ seconds.",
+        color = discord.Color.dark_gold())
+    ctx.send(embed=embed)
+
+sys.excepthook = exception_handler
 class YTLogger(object):
     def debug(self, msg):
         pass
@@ -46,17 +49,6 @@ async def on_ready(): # Event occurs as soon as bot is online
     print(f'Connected as {bot.user}.') # Prints to console that bot is connected
 
 @bot.command(name='ret', pass_context=True) # Command ;ret
-async def on_error(ctx, event, *args, **kwargs):
-    logging.warning(traceback.format_exc(), exc_info=sys.exc_info())
-    logging.error(traceback.format_exc(), exc_info=sys.exc_info())
-    logging.exception(traceback.format_exc(), exc_info=sys.exc_info())
-    embed = discord.Embed(
-        title = "⚠️ Invalid Input",
-        description = "Must be a URL containing media supported by yt-dlp that isn't longer than\n90~ seconds.",
-        color = discord.Color.dark_gold())
-    await ctx.send(embed=embed)
-
-
 async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as 'arg' variable
     with yt_dlp.YoutubeDL(ydl_opts) as ydl: # yt-dlp download with ydl_opts as options
         info = ydl.extract_info(arg) # stores arg info in json format to 'info' variable
