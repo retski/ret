@@ -11,32 +11,19 @@ def remove_urls (vTEXT):
     vTEXT = re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', '', vTEXT, flags=re.MULTILINE)
     return(vTEXT)
 
-def exception_handler(ctx, exctype, value, tb):
+def exception_handler():
     logging.warning(traceback.format_exc())
     logging.error(traceback.format_exc())
     logging.exception(traceback.format_exc())
-    embed = discord.Embed(
-        title = "⚠️ Invalid Input",
-        description = "Must be a URL containing media supported by yt-dlp that isn't longer than\n90~ seconds.",
-        color = discord.Color.dark_gold())
-    ctx.send(embed=embed)
+    pass
 
 sys.excepthook = exception_handler
-class YTLogger(object):
-    def debug(self, msg):
-        pass
-
-    def warning(self, msg):
-        pass
-
-    def error(self, msg):
-        print(msg)
 
 
 ydl_opts = {
     'format': 'bestvideo[ext=mp4]/mp4',
     'outtmpl': 'ret.mp4',
-    'logger': YTLogger(),
+    'logger': exception_handler(),
 }
 # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
 load_dotenv()
