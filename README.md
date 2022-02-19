@@ -14,4 +14,6 @@ Small discord bot for downloading media and embedding it in a channel
 Clone the repository and then create a .env file  
   
 **.env format**
-> DISCORD_TOKEN=1234abcdefgh
+```
+DISCORD_TOKEN=1234abcdefgh
+```
