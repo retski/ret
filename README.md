@@ -1,7 +1,7 @@
 # ret
 Small discord bot for downloading media and embedding it in a channel
 
-- Utilizes yt-dlp
+- Requires discord-py, yt-dlp & ffmpeg
 
 ## Usage
 
