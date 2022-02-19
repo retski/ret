@@ -6,10 +6,15 @@ import discord
 import yt_dlp
 import re
 import ffmpeg
+import traceback
+import logging
+import sys
 
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord.ext.commands import Bot
+
+logging.basicConfig(filename='.\output.log', filemode='w', level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
 def remove_urls (vTEXT):
     vTEXT = re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', '', vTEXT, flags=re.MULTILINE)
@@ -40,30 +45,18 @@ bot = commands.Bot(command_prefix=';') # Set prefix to ; i.e ";ret" for commands
 async def on_ready(): # Event occurs as soon as bot is online
     print(f'Connected as {bot.user}.') # Prints to console that bot is connected
 
-
-@commands.Cog.listener()
-async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.CommandNotFound):
-        return  # Return because we don't want to show an error for every command not found
-    elif isinstance(error, commands.MissingPermissions):
-        message = (f"{ctx.author} is missing permissions.")
-    elif isinstance(error, commands.UserInputError):
-        message = "Incorrect Input"
-    elif isinstance(error, commands.CommandError):
-        message = "Something went wrong."
-    else:
-        message = "Something went wrong."
-
-    await ctx.send(message, delete_after=5)
-    await ctx.message.delete(delay=5)
-
 @bot.command(name='ret', pass_context=True) # Command ;ret
-async def on_error(ctx):
+async def on_error(ctx, event, *args, **kwargs):
+    logging.warning(traceback.format_exc(), exc_info=sys.exc_info())
+    logging.error(traceback.format_exc(), exc_info=sys.exc_info())
+    logging.exception(traceback.format_exc(), exc_info=sys.exc_info())
     embed = discord.Embed(
         title = "⚠️ Invalid Input",
         description = "Must be a URL containing media supported by yt-dlp that isn't longer than\n90~ seconds.",
         color = discord.Color.dark_gold())
     await ctx.send(embed=embed)
+
+
 async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as 'arg' variable
     with yt_dlp.YoutubeDL(ydl_opts) as ydl: # yt-dlp download with ydl_opts as options
         info = ydl.extract_info(arg) # stores arg info in json format to 'info' variable
