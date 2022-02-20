@@ -23,7 +23,7 @@ sys.excepthook = exception_handler
 
 
 ydl_opts = {
-    'format': 'bestvideo[ext=mp4]+bestaudio/1080p',
+    'format': 'bestvideo[ext=mp4]+bestaudio/1080p/http-2176/bytevc1_720p_840094-2',
     'merge_output_format': 'mp4',
     'outtmpl': 'ret.mp4',
     'logger': exception_handler(),
