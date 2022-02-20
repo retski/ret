@@ -13,7 +13,9 @@ def remove_urls (vTEXT):
 
 def exception_handler():
     logging.warning(traceback.format_exc())
+    pass
     logging.error(traceback.format_exc())
+    pass
     logging.exception(traceback.format_exc())
     pass
 
@@ -21,7 +23,8 @@ sys.excepthook = exception_handler
 
 
 ydl_opts = {
-    'format': 'bestvideo[ext=mp4]/mp4',
+    'format': 'bestvideo[ext=mp4]+bestaudio/1080p',
+    'merge_output_format': 'mp4',
     'outtmpl': 'ret.mp4',
     'logger': exception_handler(),
 }
@@ -38,8 +41,8 @@ async def on_ready(): # Event occurs as soon as bot is online
 @bot.command(name='ret', pass_context=True) # Command ;ret
 async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as 'arg' variable
     with yt_dlp.YoutubeDL(ydl_opts) as ydl: # yt-dlp download with ydl_opts as options
-        info = ydl.extract_info(arg) # stores arg info in json format to 'info' variable
         ydl.download([arg])
+        info = ydl.extract_info(arg) # stores arg info in json format to 'info' variable
 
         filename = 'info.json' # creating a json file for info
         with open(filename, 'w') as file_object:
@@ -86,8 +89,14 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
                 icon_url = "https://brandlogos.net/wp-content/uploads/2020/03/YouTube-icon-SVG-512x512.png")
             embed.set_footer(
                 text=(f"❤️ {likes} 👁️ {views} • {ctx.author}"))
+            process = ffmpeg.input('ret.mp4')
+            process = ffmpeg.output(process, 'ret_yt.mp4', vcodec='libx264')
+            ffmpeg.run(process)
+            ffmpeg.overwrite_output(process)
+            file = discord.File("ret_yt.mp4")
             await ctx.send(file=file, embed=embed)
             print(f"Downloading {title} for {ctx.author}...")
+            os.remove("ret_yt.mp4")
             os.remove("ret.mp4")
         elif "tiktok" in arg:
             await ctx.message.delete()
@@ -124,7 +133,6 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
                 color = discord.Color.dark_gold())
             file = discord.File("ret.mp4")
             await ctx.send(file=file, embed=embed)
-            await ctx.embed.delete(delay=5)
             os.remove("ret.mp4")
 bot.run(TOKEN)
 
