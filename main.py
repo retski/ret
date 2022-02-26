@@ -78,7 +78,7 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
                 logging.info(f"Downloading {title} for {ctx.author}...")
                 os.remove("ret.mp4")
                 os.remove("ret_tw.mp4")
-            elif "youtube" or "youtu.be" in arg:
+            elif "youtube" in arg:
                 await ctx.message.delete()
                 title = data['title'] 
                 uploader = data['uploader']
@@ -131,6 +131,25 @@ async def mainCmd(ctx, arg): # Passes message context and stores the 1st part as
                 await ctx.send(file=file, embed=embed)
                 logging.info(f"Downloading {title} for {ctx.author}...")
                 os.remove("ret_tt.mp4")
+                os.remove("ret.mp4")
+
+            elif "reddit" in arg:
+                await ctx.message.delete()
+                title = data['title']
+                uploader = data['uploader']
+                likes = data['like_count']
+                comments = data['comment_count']
+                embed = discord.Embed(
+                    title = f"{title}",
+                    url = arg,
+                    color = discord.Color.red())
+                embed.set_author(
+                    name = (f"{uploader}"),
+                    icon_url = "https://external-preview.redd.it/iDdntscPf-nfWKqzHRGFmhVxZm4hZgaKe5oyFws-yzA.png?width=640&crop=smart&auto=webp&s=bfd318557bf2a5b3602367c9c4d9cd84d917ccd5")
+                embed.set_footer(
+                    text=(f"❤️ {likes} 💬 {comments} • {ctx.author}"))
+                file = discord.File("ret.mp4")
+                await ctx.send(file=file, embed=embed)
                 os.remove("ret.mp4")
             else:
 
